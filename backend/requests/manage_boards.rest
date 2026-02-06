@@ -1,0 +1,49 @@
+### 1. Create a New Board
+# This will trigger the default columns (To Do, In Progress, Done)
+POST http://localhost:3001/api/boards
+Content-Type: application/json
+
+{
+  "title": "Atomic Sprint"
+}
+
+### 2. Get All Boards
+# Use this to find the ID of the board you just created
+GET http://localhost:3001/api/boards
+
+### 3. Get Specific Board
+# Replace {{boardId}} with the id from request #1
+GET http://localhost:3001/api/boards/69863f68029cbd92e514d74b
+
+### 4. Add a Task to 'To Do' Column
+# Replace {{boardId}} and {{columnId}}
+# You can find the columnId inside the board object from request #3
+POST http://localhost:3001/api/boards/69863f68029cbd92e514d74b/columns/69863f68029cbd92e514d74e/tasks
+Content-Type: application/json
+
+{
+  "content": "Trying to Fix bugs.",
+  "priority": "high"
+}
+
+### 5. Move/Update Columns (Simulating Drag and Drop)
+# Copy the entire columns array from request #3 and rearrange it
+PUT http://localhost:3001/api/boards/69864308e69345f1217feef5
+Content-Type: application/json
+
+{
+  "columns": [
+    {
+      "title": "To Do",
+      "tasks": [ { "content": "Mastering Socket.io", "priority": "high" }]
+    },
+    {
+      "title": "In Progress",
+      "tasks": []
+    },
+    {
+      "title": "Done",
+      "tasks": []
+    }
+  ]
+}

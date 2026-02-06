@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+/* This block resets the browser's hidden height limits */
+:root {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100vh !important;
+  width: 100vw !important;
+  margin: 0;
+  padding: 0;
+  background-color: #0b1120; /* The Dark Navy */
+  overflow: hidden;
+}
+
+/* Custom scrollbar so it doesn't look like Windows 95 */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
