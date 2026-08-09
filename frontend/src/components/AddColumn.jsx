@@ -20,7 +20,7 @@ const AddColumn = ({ boardId }) => {
     return (
       <button
         onClick={() => setIsEditing(true)}
-        className="w-80 shrink-0 h-14 rounded-2xl border-2 border-dashed border-slate-800 text-slate-500 hover:text-slate-300 hover:border-slate-700 hover:bg-slate-800/20 transition-all font-medium text-sm"
+        className="w-80 cursor-pointer shrink-0 h-14 rounded-2xl border-2 border-dashed border-slate-800 text-slate-500 hover:text-slate-300 hover:border-slate-700 hover:bg-slate-800/20 transition-all font-medium text-sm"
       >
         + Add another list
       </button>
@@ -40,13 +40,13 @@ const AddColumn = ({ boardId }) => {
       <div className="flex gap-2 mt-3">
         <button
           onClick={handleAdd}
-          className="bg-blue-600 px-4 py-1.5 rounded-lg text-xs font-bold"
+          className="bg-blue-600 px-4 py-1.5 rounded-lg text-xs font-bold cursor-pointer"
         >
           Add List
         </button>
         <button
           onClick={() => setIsEditing(false)}
-          className="text-slate-400 text-xs hover:text-white"
+          className="text-slate-400 text-xs hover:text-white cursor-pointer"
         >
           Cancel
         </button>

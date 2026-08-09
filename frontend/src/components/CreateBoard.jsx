@@ -26,7 +26,7 @@ const CreateBoard = () => {
     return (
       <button
         onClick={() => setIsEditing(true)}
-        className="ml-4 px-3 py-1.5 border border-dashed border-slate-700 rounded-lg text-xs text-slate-500 hover:border-blue-500/50 hover:text-blue-400 hover:bg-blue-500/5 transition-all flex items-center gap-2"
+        className="ml-4 px-3 py-1.5 cursor-pointer border border-dashed border-slate-700 rounded-lg text-xs text-slate-500 hover:border-blue-500/50 hover:text-blue-400 hover:bg-blue-500/5 transition-all flex items-center gap-2"
       >
         <span className="text-lg leading-none">+</span>
         New Board
@@ -42,20 +42,20 @@ const CreateBoard = () => {
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Board name..."
-        className="bg-slate-800 border border-slate-700 text-white text-xs rounded-md px-2 py-1.5 focus:outline-none focus:border-blue-500 w-32"
+        className="bg-slate-800 border border-slate-700 text-white text-xs rounded-md px-2 py-1.5 focus:outline-none focus:border-blue-500 w-50"
         onBlur={() => !title && setIsEditing(false)}
       />
       <div className="flex gap-1">
         <button
           type="submit"
-          className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold px-2 py-1.5 rounded uppercase"
+          className="bg-blue-600 hover:bg-blue-500 text-white text-[10px] font-bold px-2 py-1.5 rounded uppercase cursor-pointer"
         >
           Create
         </button>
         <button
           type="button"
           onClick={() => setIsEditing(false)}
-          className="text-slate-500 hover:text-slate-300 px-1"
+          className="text-slate-500 hover:text-red-600 px-1 cursor-pointer"
         >
           ✕
         </button>

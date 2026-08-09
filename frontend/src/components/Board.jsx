@@ -2,6 +2,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  deleteBoard,
   moveTask,
   removeTask,
   setBoard,
@@ -17,6 +18,7 @@ const socket = io("http://localhost:3001");
 const Board = ({ boardId }) => {
   const dispatch = useDispatch();
   const board = useSelector((state) => state.board.data);
+  const activeBoard = useSelector((state) => state.board.data);
 
   useEffect(() => {
     boardService.getById(boardId).then((data) => {
@@ -36,7 +38,6 @@ const Board = ({ boardId }) => {
   const onDragEnd = (result) => {
     const { destination, source } = result;
 
-    // 1. Basic checks
     if (!destination) return;
     if (
       destination.droppableId === source.droppableId &&
@@ -44,11 +45,8 @@ const Board = ({ boardId }) => {
     )
       return;
 
-    // 2. Update UI instantly
     dispatch(moveTask({ source, destination }));
 
-    // 3. Sync with Backend via Socket.io
-    // This tells everyone else: "Hey, I moved a card!"
     socket.emit("move_task", {
       boardId,
       source,
@@ -60,9 +58,24 @@ const Board = ({ boardId }) => {
     if (window.confirm("Delete this task?")) {
       await boardService.deleteTask(board._id || board.id, columnId, taskId);
       dispatch(removeTask({ columnId, taskId }));
-
-      // Optional: Notify other users via socket
       socket.emit("task_deleted", { boardId: board._id, columnId, taskId });
+    }
+  };
+
+  const handleDeleteBoard = async () => {
+    if (!activeBoard) return;
+
+    const boardTitle = activeBoard.title;
+    const boardId = activeBoard._id || activeBoard.id;
+
+    if (window.confirm(`Are you sure you want to delete "${boardTitle}"?`)) {
+      try {
+        await boardService.delete(boardId);
+        dispatch(deleteBoard(boardId));
+      } catch (error) {
+        console.error("Error deleting board:", error);
+        alert("Failed to delete board.");
+      }
     }
   };
 
@@ -71,27 +84,51 @@ const Board = ({ boardId }) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      {/* 'fixed inset-0' forces the board to cover the entire browser window */}
       <div className="flex flex-col h-full w-full bg-transparent overflow-hidden">
         {/* Top Navbar */}
-        <header className="h-16 border-b border-slate-800 flex items-center px-8 bg-slate-900/50 backdrop-blur-md z-10">
+        <header className="h-16 border-b border-slate-800 flex items-center justify-between px-8 bg-slate-900/50 backdrop-blur-md shrink-0">
           <h1 className="text-xl font-bold bg-linear-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
             {board.title}
           </h1>
+          {activeBoard && (
+            <button
+              onClick={handleDeleteBoard}
+              className="shrink-0 ml-2 p-2 text-slate-500 hover:text-red-500 hover:bg-red-500/10 rounded-lg transition-all group cursor-pointer"
+              title="Delete current board"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-6 w-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+            </button>
+          )}
         </header>
+
         {/* Main Board Area */}
-        <main className="flex-1 overflow-x-auto overflow-y-hidden">
-          <div className="flex h-full p-6 gap-6 items-start">
+        <main className="flex-1 overflow-x-auto min-h-0">
+          {/* FIXED: items-stretch ensures columns inherit full main height */}
+          <div className="flex h-full p-6 gap-6 items-stretch min-w-max">
             {board.columns.map((column, colIndex) => {
               const colId = column._id || column.id || `temp-col-${colIndex}`;
 
               return (
+                /* FIXED: Removed max-h-full, added h-full min-h-0 to lock column frame */
                 <div
                   key={colId}
-                  className="w-80 flex flex-col max-h-full bg-slate-800/60 rounded-2xl border border-slate-700/50 shadow-2xl"
+                  className="w-80 flex flex-col h-full min-h-0 shrink-0 bg-slate-800/60 rounded-2xl border border-slate-700/50 shadow-2xl"
                 >
                   {/* Column Title */}
-                  <div className="p-4 flex justify-between items-center">
+                  <div className="p-4 flex justify-between items-center shrink-0">
                     <h2 className="font-bold text-xs uppercase tracking-widest text-slate-400">
                       {column.title}
                     </h2>
@@ -100,15 +137,14 @@ const Board = ({ boardId }) => {
                     </span>
                   </div>
 
-                  {/* CORRECTED: Droppable is OUTSIDE the map */}
+                  {/* Droppable Task List */}
                   <Droppable droppableId={colId.toString()}>
                     {(provided) => (
                       <div
                         {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className="flex-1 overflow-y-auto px-4 pb-2 space-y-3 custom-scrollbar min-h-12.5"
+                        className="flex-1 overflow-y-auto px-4 pb-2 space-y-3 custom-scrollbar min-h-0"
                       >
-                        {/* The map goes INSIDE here */}
                         {column.tasks.map((task, index) => (
                           <Draggable
                             key={task._id || task.id}
@@ -120,7 +156,7 @@ const Board = ({ boardId }) => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className="relative p-4 mb-3 rounded-xl border bg-slate-800/80 border-slate-700/50 group"
+                                className="relative p-4 rounded-xl border bg-slate-800/80 border-slate-700/50 group"
                               >
                                 <p className="text-sm text-slate-200 pr-6">
                                   {task.content}
@@ -132,11 +168,11 @@ const Board = ({ boardId }) => {
                                       task._id || task.id,
                                     )
                                   }
-                                  className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-500 transition-opacity"
+                                  className="absolute cursor-pointer top-3 right-3 group-hover:opacity-100 text-slate-500 hover:text-red-500 transition-all"
                                 >
                                   <svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    className="h-4 w-4"
+                                    className="h-5 w-5"
                                     fill="none"
                                     viewBox="0 0 24 24"
                                     stroke="currentColor"
