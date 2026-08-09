@@ -30,7 +30,7 @@ const EmptyState = () => {
       {/* Subtle arrow pointing to the "New Board" button */}
       <div className="flex flex-col items-center animate-bounce text-blue-500/50">
         <span className="text-xs font-bold uppercase tracking-widest mb-2">
-          Create one here
+          Create one
         </span>
         <svg
           xmlns="http://www.w3.org/2000/svg"

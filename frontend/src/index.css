@@ -14,7 +14,6 @@ body,
   margin: 0;
   padding: 0;
   background-color: #0b1120; /* The Dark Navy */
-  overflow: hidden;
 }
 
 /* Custom scrollbar so it doesn't look like Windows 95 */

@@ -20,7 +20,7 @@ const AddTask = ({ boardId, columnId }) => {
     return (
       <button
         onClick={() => setIsAdding(true)}
-        className="w-full text-left p-2 mt-2 text-slate-400 hover:bg-slate-700 hover:text-slate-200 rounded-lg transition-colors text-sm font-medium"
+        className="w-full cursor-pointer text-left p-2 mt-2 text-slate-400 hover:bg-slate-700 hover:text-slate-200 rounded-lg transition-colors text-sm font-medium"
       >
         + Add a card
       </button>
